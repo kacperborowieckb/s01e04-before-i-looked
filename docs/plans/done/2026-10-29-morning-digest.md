@@ -1,6 +1,6 @@
 ---
 plan: morning-digest
-status: ready
+status: done
 owner: rook
 opened: 2026-10-29
 ---
@@ -77,3 +77,20 @@ page again with `LANE_MARKER` unset (the banner reads "no marker set") and uploa
 link. Move this plan to `docs/plans/done/` with its issue list.
 
 Done when: the preview link no longer shows the lane marker.
+
+## Issue list
+
+- [#1 Digest type contract](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/1)
+- [#2 Run log reader](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/2)
+- [#3 Digest HTML page](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/3)
+- [#4 Digest JSON endpoint](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/4)
+- [#5 Status board digest links](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/5)
+- [#6 Digest route tests](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/6)
+- [#7 Public review copy](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/7)
+- [#8 Remove marker and archive plan](https://github.com/kacperborowieckb/s01e04-before-i-looked/issues/8)
+
+## Completion
+
+The markerless preview is live at [https://s01e04-before-i-looked-sepia.vercel.app](https://s01e04-before-i-looked-sepia.vercel.app). Its anonymous public HTML was verified to match the markerless export and show “no marker set”; the only content change from the prior preview was the banner marker text. The old marker-bearing deployment was removed after verification.
+
+The reviewer has explicitly confirmed seeing the preview, satisfying the review-seen gate. Review submission is not review completion, and this does not claim that the course challenge is solved.
