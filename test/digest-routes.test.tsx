@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app.js';
+import type { DigestNight } from '../src/digest/types.js';
 
 const config = {
   adapter: 'shim',
@@ -77,7 +78,7 @@ describe('digest routes', () => {
     expect(jsonResponse.status).toBe(200);
 
     const html = await pageResponse.text();
-    const digest = await jsonResponse.json();
+    const digest: DigestNight = await jsonResponse.json();
     expect(digest).toMatchObject({
       badLines: 1,
       counts: { ok: 3, retry: 3, fail: 1 },
@@ -91,7 +92,7 @@ describe('digest routes', () => {
     const rows = tableRows(html);
     expect(rows).toHaveLength(digest.rows.length);
     for (const [index, row] of rows.entries()) {
-      expect(row).toContain(digest.rows[index].job.replaceAll('<', '&lt;').replaceAll('>', '&gt;'));
+      expect(row).toContain(digest.rows[index].job.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll("'", '&#39;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'));
       expect(row).toContain(String(digest.rows[index].retries));
     }
 
@@ -121,8 +122,8 @@ describe('digest routes', () => {
     const alphaRow = rows.find((row) => row.includes('alpha'));
     const betaRow = rows.find((row) => row.includes('beta'));
     expect(alphaRow).toContain('—');
-    expect(alphaRow).toMatch(/fail|failed/i);
-    expect(betaRow).toMatch(/retry/i);
+    expect(alphaRow).toMatch(/class="warn"[^>]*>[^<]*failed at least once/);
+    expect(betaRow).toMatch(/class="warn"[^>]*>[^<]*3 or more retries/);
   });
 
   it('returns 404 for missing and invalid night names', async () => {
@@ -131,10 +132,18 @@ describe('digest routes', () => {
       const response = await app.request(path);
       expect(response.status).toBe(404);
     }
-    for (const path of ['/digest/not-a-night', '/api/digest/not-a-night']) {
-      const response = await app.request(path);
-      expect(response.status).toBe(404);
+    for (const night of ['not-a-night', '2026-02-30', '2026-13-01']) {
+      for (const prefix of ['/digest', '/api/digest']) {
+        const response = await app.request(`${prefix}/${night}`);
+        expect(response.status).toBe(404);
+      }
     }
+  });
+
+  it('accepts the same valid four-digit years in HTML and JSON', async () => {
+    const app = await appWithNight('0099-01-01', '');
+    expect((await app.request('/digest/0099-01-01')).status).toBe(200);
+    expect((await app.request('/api/digest/0099-01-01')).status).toBe(200);
   });
 
   it('renders and returns an existing empty night successfully', async () => {
